@@ -28,8 +28,8 @@
 
         [data-theme="dark"] {
             --primary: #38bdf8;
-            --bg: #0f172a; /* Fundo em azul escuro profundo */
-            --card-bg: #1e293b; /* Cartões em azul escuro elegante */
+            --bg: #0f172a;
+            --card-bg: #1e293b;
             --text: #f8fafc;
             --text-secondary: #94a3b8;
             --border: #334155;
@@ -125,6 +125,7 @@
     </div>
 
     <div class="grid">
+        <!-- Coluna Esquerda: Rendimento e Baldes -->
         <div>
             <div class="card">
                 <h2>💰 1. Rendimento & Bases</h2>
@@ -151,14 +152,17 @@
             </div>
 
             <div class="card">
-                <h2>🌊 2. Distribuição do Excedente</h2>
+                <h2>🌊 2. Distribuição Automática do Excedente</h2>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+                    O excedente disponível distribui-se em cascata pelos baldes seguintes. Ajusta o Fundo de Emergência e o Futuro para recalcular automaticamente o Dinheiro Livre.
+                </p>
                 
                 <div class="slider-group">
                     <div class="slider-header">
                         <span class="s-b3">🏦 Balde 3: Fundo de Emergência</span>
                         <span id="b3Val">250 €</span>
                     </div>
-                    <input type="range" id="b3Slider" min="0" max="1500" step="25" value="250" oninput="calculateBudget()">
+                    <input type="range" id="b3Slider" min="0" max="1500" step="25" value="250" oninput="onBucketChange('b3')">
                 </div>
 
                 <div class="slider-group">
@@ -166,19 +170,20 @@
                         <span class="s-b4">📈 Balde 4: Futuro / Investimentos</span>
                         <span id="b4Val">150 €</span>
                     </div>
-                    <input type="range" id="b4Slider" min="0" max="1500" step="25" value="150" oninput="calculateBudget()">
+                    <input type="range" id="b4Slider" min="0" max="1500" step="25" value="150" oninput="onBucketChange('b4')">
                 </div>
 
                 <div class="slider-group">
                     <div class="slider-header">
-                        <span class="s-b5">✨ Balde 5: Dinheiro Livre</span>
+                        <span class="s-b5">✨ Balde 5: Dinheiro Livre (Automático)</span>
                         <span id="b5Val">300 €</span>
                     </div>
-                    <input type="range" id="b5Slider" min="0" max="1500" step="25" value="300" oninput="calculateBudget()">
+                    <input type="range" id="b5Slider" min="0" max="1500" step="25" value="300" disabled style="opacity: 0.7;">
                 </div>
             </div>
         </div>
 
+        <!-- Coluna Direita: Gráfico e Fundo de Emergência -->
         <div>
             <div class="card">
                 <h2>📈 Resumo do Orçamento</h2>
@@ -211,11 +216,12 @@
                         <option value="12">12 Meses de segurança máxima</option>
                     </select>
                 </div>
-                <p id="emergencyText" style="font-size: 13.5px; margin-top: 8px; color: var(--text-secondary);"></p>
+                <p id="emergencyText" style="font-size: 13.5px; margin-top: 8px; color: var(--text-secondary); line-height: 1.6;"></p>
             </div>
         </div>
     </div>
 
+    <!-- Módulo de Assistente IA -->
     <div class="card">
         <h2>🤖 Assistente IA de Estratégia Financeira</h2>
         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 14px;">
@@ -323,28 +329,49 @@
 
         let b1 = parseFloat(document.getElementById('b1Slider').value);
         let b2 = parseFloat(document.getElementById('b2Slider').value);
+        
+        const totalFixed = b1 + b2;
+        let surplus = income - totalFixed;
+
+        if (surplus < 0) {
+            surplus = 0;
+        }
+
+        document.getElementById('b3Slider').max = surplus;
+        document.getElementById('b4Slider').max = surplus;
+
         let b3 = parseFloat(document.getElementById('b3Slider').value);
         let b4 = parseFloat(document.getElementById('b4Slider').value);
-        let b5 = parseFloat(document.getElementById('b5Slider').value);
+
+        if (b3 > surplus) { b3 = surplus; document.getElementById('b3Slider').value = b3; }
+        let remainingAfterB3 = surplus - b3;
+
+        if (b4 > remainingAfterB3) { b4 = remainingAfterB3; document.getElementById('b4Slider').value = b4; }
+        
+        let b5 = surplus - b3 - b4;
+        if (b5 < 0) b5 = 0;
 
         document.getElementById('b1Val').innerText = b1 + ' €';
         document.getElementById('b2Val').innerText = b2 + ' €';
         document.getElementById('b3Val').innerText = b3 + ' €';
         document.getElementById('b4Val').innerText = b4 + ' €';
         document.getElementById('b5Val').innerText = b5 + ' €';
-
-        const totalFixed = b1 + b2;
-        const surplus = income - totalFixed;
-        const savingsRate = income > 0 ? ((b3 + b4) / income * 100).toFixed(1) : 0;
+        document.getElementById('b5Slider').value = b5;
 
         document.getElementById('totalFixed').innerText = totalFixed + ' €';
         document.getElementById('totalSurplus').innerText = surplus + ' €';
+        
+        const savingsRate = income > 0 ? ((b3 + b4) / income * 100).toFixed(1) : 0;
         document.getElementById('savingsRate').innerText = savingsRate + ' %';
 
         chart.data.datasets[0].data = [b1, b2, b3, b4, b5];
         chart.update();
 
         calculateEmergency();
+    }
+
+    function onBucketChange(source) {
+        calculateBudget();
     }
 
     function calculateEmergency() {
@@ -358,8 +385,9 @@
 
         document.getElementById('emergencyText').innerHTML = 
             `Para cobrir as tuas despesas fixas (${b1} €), a meta de ${months} meses é de <strong>${target.toLocaleString()} €</strong>. ` +
-            `Ao ritmo de poupança atual no Balde 3 (${b3} €/mês), demorarás cerca de <strong>${monthsNeeded} meses (${yearsNeeded} anos)</strong> a atingir o objetivo. ` +
-            `🚀 Quanto mais rápido completares este fundo, maior será a sensação de fôlego e estabilidade financeira!`;
+            `Ao ritmo de poupança atual no Balde 3 (${b3} €/mês), demorarás cerca de <strong>${monthsNeeded} meses (${yearsNeeded} anos)</strong> a atingir o objetivo.<br><br>` +
+            `💡 <strong>Dicas de aceleração:</strong> Reduzir custos fixos no Balde 1 ou desviar temporariamente verba do Balde 5 acelera o processo. ` +
+            `🚀 Quanto mais rápido atingires este fundo, maior será a sensação de <strong>fôlego, paz mental e estabilidade financeira</strong>!`;
     }
 
     async function runAiDiagnosis() {
@@ -400,58 +428,5 @@
                 textP.innerHTML = 'Não foi possível obter uma resposta válida. Verifica se a chave API tem permissões ativas.';
             }
         } catch (err) {
-            textP.innerHTML = '⚠️ Erro de ligação à API. Verifica a tua ligação à internet ou a validade da chave.';
-        }
-    }
-
-    async function sendAiChat() {
-        const query = document.getElementById('chatQuery').value.trim();
-        if (!query) return;
-
-        const outputDiv = document.getElementById('aiOutput');
-        const textP = document.getElementById('aiText');
-        outputDiv.style.display = 'block';
-
-        if (!apiKey) {
-            textP.innerHTML = '⚠️ Insere primeiro a tua Chave API Gemini no topo.';
-            return;
-        }
-
-        textP.innerHTML = '💬 A pensar...';
-
-        const b1 = document.getElementById('b1Slider').value;
-        const income = document.getElementById('incomeInput').value;
-        const fullPrompt = `Contexto do utilizador no simulador de Rui Magalhães: Rendimento ${income}€, Balde 1 ${b1}€. Pergunta do utilizador: ${query}`;
-
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
-            });
-
-            const data = await response.json();
-
-            if (data.error) {
-                textP.innerHTML = `⚠️ Erro: ${data.error.message || 'Chave API inválida.'}`;
-                return;
-            }
-
-            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (reply) {
-                textP.innerHTML = `<strong>Pergunta:</strong> ${query}<br><br>${reply.replace(/\n/g, '<br>')}`;
-                document.getElementById('chatQuery').value = '';
-            } else {
-                textP.innerHTML = 'Sem resposta do assistente. Tenta novamente.';
-            }
-        } catch (err) {
-            textP.innerHTML = '⚠️ Erro na ligação ao chat. Confirma a tua chave API e a ligação à rede.';
-        }
-    }
-
-    window.onload = initChart;
-</script>
-
-</body>
-</html>
+            textP.innerHTML = '⚠️ Erro de ligação à API. Verifica a tua ligação à internet ou a validade
  
