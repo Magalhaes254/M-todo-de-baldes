@@ -5,62 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador do Método dos Baldes - Por Rui Magalhães</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1a73e8;
-            --success: #34a853;
-            --warning: #fbbc04;
-            --danger: #ea4335;
-            --bg: #f8f9fa;
+            --primary: #2563eb;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #202124;
-            --text-secondary: #5f6368;
-            --border: #dadce0;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --b1: #ef4444; /* Vermelho - Fixas */
+            --b2: #f59e0b; /* Amarelo/Laranja - Preparação */
+            --b3: #3b82f6; /* Azul - Emergência */
+            --b4: #10b981; /* Verde - Futuro/Investimentos */
+            --b5: #8b5cf6; /* Roxo - Livre */
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
+        body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.5; }
         .container { max-width: 900px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 30px; }
-        header h1 { font-size: 24px; color: var(--primary); margin-bottom: 5px; }
-        header p { color: var(--text-secondary); font-size: 14px; }
-        .author-tag { display: inline-block; background: #e8f0fe; color: var(--primary); padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-top: 8px; }
         
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .card h2 { font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+        header { text-align: center; margin-bottom: 24px; }
+        header h1 { font-size: 26px; color: var(--primary); font-weight: 700; margin-bottom: 4px; }
+        header p { color: var(--text-secondary); font-size: 14px; }
+        .author-tag { display: inline-block; background: #dbeafe; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-top: 10px; }
+        
+        .api-key-bar { background: #fef3c7; border: 1px solid #fde68a; padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .api-key-bar input { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #f59e0b; border-radius: 6px; font-size: 13px; background: #fff; }
+
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card h2 { font-size: 17px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--text); font-weight: 600; }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
 
         .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-secondary); }
-        .input-group input, .input-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; background: #fff; }
-        .input-group input:focus, .input-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.2); }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); }
+        .input-group input, .input-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; background: #f8fafc; font-weight: 500; }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
 
-        .slider-group { margin-bottom: 14px; }
-        .slider-header { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px; font-weight: 500; }
-        input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+        .slider-group { margin-bottom: 16px; padding: 12px; border-radius: 10px; background: #f8fafc; border: 1px solid var(--border); }
+        .slider-header { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; font-weight: 600; }
+        
+        /* Cores personalizadas nos títulos dos sliders */
+        .s-b1 { color: var(--b1); }
+        .s-b2 { color: var(--b2); }
+        .s-b3 { color: var(--b3); }
+        .s-b4 { color: var(--b4); }
+        .s-b5 { color: var(--b5); }
 
-        .summary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-box { background: #f1f3f4; padding: 14px; border-radius: 8px; text-align: center; }
-        .stat-box span { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
-        .stat-box strong { font-size: 18px; color: var(--text); }
-        .stat-box.surplus strong { color: var(--success); }
+        input[type="range"] { width: 100%; cursor: pointer; height: 6px; border-radius: 3px; background: #cbd5e1; appearance: none; }
+        
+        .summary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 10px; text-align: center; }
+        .stat-box span { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+        .stat-box strong { font-size: 16px; color: var(--text); }
+        .stat-box.highlight strong { color: var(--primary); }
 
-        .chart-container { position: relative; height: 260px; width: 100%; }
+        .chart-container { position: relative; height: 240px; width: 100%; }
 
-        .ai-box { background: #f0f4f8; border-left: 4px solid var(--primary); padding: 16px; border-radius: 0 8px 8px 0; margin-top: 15px; }
+        .ai-box { background: #eff6ff; border-left: 4px solid var(--primary); padding: 16px; border-radius: 0 12px 12px 0; margin-top: 15px; }
         .ai-box h3 { font-size: 15px; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .ai-box p { font-size: 14px; color: var(--text); margin-bottom: 8px; }
         
-        .chat-input-area { display: flex; gap: 8px; margin-top: 12px; }
-        .chat-input-area input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
-        .btn:hover { background: #1557b0; }
+        .chat-input-area { display: flex; gap: 8px; margin-top: 14px; }
+        .chat-input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: #fff; }
         
-        .api-key-bar { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; display: flex; gap: 10px; align-items: center; }
-        .api-key-bar input { flex: 1; padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; }
-
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; font-size: 14px; }
+        .btn:hover { background: #1d4ed8; }
+        
         footer { text-align: center; margin-top: 30px; font-size: 13px; color: var(--text-secondary); }
     </style>
 </head>
@@ -68,81 +80,88 @@
 
 <div class="container">
     <header>
-        <h1>Método dos Baldes (Cascata)</h1>
-        <p>Gestão financeira automatizada, simples e dinâmica</p>
-        <div class="author-tag">Desenvolvido por Rui Magalhães</div>
+        <h1>📊 Método dos Baldes (Cascata)</h1>
+        <p>Gestão financeira automatizada e inteligente</p>
+        <div class="author-tag">💡 Desenvolvido por Rui Magalhães</div>
     </header>
 
     <div class="api-key-bar">
-        <span>🔑 Chave API Gemini:</span>
-        <input type="password" id="apiKeyInput" placeholder="Insere a tua chave API aqui para ativar o assistente..." />
-        <button class="btn" onclick="saveApiKey()" style="padding: 6px 12px; font-size: 12px;">Guardar</button>
+        <span>🔑 <strong>Chave API Gemini:</strong></span>
+        <input type="password" id="apiKeyInput" placeholder="Insere a tua chave API para ativar o assistente..." />
+        <button class="btn" onclick="saveApiKey()" style="padding: 6px 14px; font-size: 12px;">Guardar</button>
     </div>
 
     <div class="grid">
+        <!-- Coluna Esquerda: Rendimento e Baldes -->
         <div>
             <div class="card">
-                <h2>1. Rendimento & Bases</h2>
+                <h2>💰 1. Rendimento & Bases</h2>
                 <div class="input-group">
                     <label>Rendimento Líquido Mensal (€)</label>
                     <input type="number" id="incomeInput" value="2200" min="0" step="50" oninput="calculateBudget()">
                 </div>
+                
                 <div class="slider-group">
                     <div class="slider-header">
-                        <span>Balde 1: Responsabilidades (Fixas)</span>
+                        <span class="s-b1">🛡️ Balde 1: Responsabilidades (Fixas)</span>
                         <span id="b1Val">1400 €</span>
                     </div>
-                    <input type="range" id="b1Slider" min="0" max="3000" step="25" value="1400" oninput="updateSlider('b1')">
+                    <input type="range" id="b1Slider" min="0" max="3000" step="25" value="1400" oninput="calculateBudget()">
                 </div>
+
                 <div class="slider-group">
                     <div class="slider-header">
-                        <span>Balde 2: Preparação Anual</span>
+                        <span class="s-b2">🎯 Balde 2: Preparação Anual</span>
                         <span id="b2Val">100 €</span>
                     </div>
-                    <input type="range" id="b2Slider" min="0" max="1000" step="10" value="100" oninput="updateSlider('b2')">
+                    <input type="range" id="b2Slider" min="0" max="1000" step="10" value="100" oninput="calculateBudget()">
                 </div>
             </div>
 
             <div class="card">
-                <h2>2. Distribuição do Excedente</h2>
+                <h2>🌊 2. Distribuição do Excedente</h2>
+                
                 <div class="slider-group">
                     <div class="slider-header">
-                        <span>Balde 3: Fundo de Emergência</span>
+                        <span class="s-b3">🏦 Balde 3: Fundo de Emergência</span>
                         <span id="b3Val">250 €</span>
                     </div>
-                    <input type="range" id="b3Slider" min="0" max="1500" step="25" value="250" oninput="updateSlider('b3')">
+                    <input type="range" id="b3Slider" min="0" max="1500" step="25" value="250" oninput="calculateBudget()">
                 </div>
+
                 <div class="slider-group">
                     <div class="slider-header">
-                        <span>Balde 4: Investimentos / Futuro</span>
+                        <span class="s-b4">📈 Balde 4: Futuro / Investimentos</span>
                         <span id="b4Val">150 €</span>
                     </div>
-                    <input type="range" id="b4Slider" min="0" max="1500" step="25" value="150" oninput="updateSlider('b4')">
+                    <input type="range" id="b4Slider" min="0" max="1500" step="25" value="150" oninput="calculateBudget()">
                 </div>
+
                 <div class="slider-group">
                     <div class="slider-header">
-                        <span>Balde 5: Dinheiro Livre</span>
+                        <span class="s-b5">✨ Balde 5: Dinheiro Livre</span>
                         <span id="b5Val">300 €</span>
                     </div>
-                    <input type="range" id="b5Slider" min="0" max="1500" step="25" value="300" oninput="updateSlider('b5')">
+                    <input type="range" id="b5Slider" min="0" max="1500" step="25" value="300" oninput="calculateBudget()">
                 </div>
             </div>
         </div>
 
+        <!-- Coluna Direita: Gráfico e Fundo de Emergência -->
         <div>
             <div class="card">
-                <h2>Resumo do Orçamento</h2>
+                <h2>📈 Resumo do Orçamento</h2>
                 <div class="summary-stats">
                     <div class="stat-box">
-                        <span>Total Baldes (1-2)</span>
+                        <span>Total Fixas</span>
                         <strong id="totalFixed">1.500 €</strong>
                     </div>
                     <div class="stat-box">
-                        <span>Excedente Disponível</span>
+                        <span>Excedente</span>
                         <strong id="totalSurplus">700 €</strong>
                     </div>
-                    <div class="stat-box surplus">
-                        <span>Taxa Poupança</span>
+                    <div class="stat-box highlight">
+                        <span>Poupança</span>
                         <strong id="savingsRate">18.2%</strong>
                     </div>
                 </div>
@@ -152,26 +171,27 @@
             </div>
 
             <div class="card">
-                <h2>Fundo de Emergência (Balde 3)</h2>
+                <h2>⏳ Fundo de Emergência (Balde 3)</h2>
                 <div class="input-group">
-                    <label>Meta de Cobertura (Meses de Despesas do Balde 1)</label>
+                    <label>Meta de Cobertura</label>
                     <select id="emergencyMonths" onchange="calculateEmergency()">
                         <option value="3">3 Meses de segurança</option>
                         <option value="6" selected>6 Meses de segurança (Recomendado)</option>
                         <option value="12">12 Meses de segurança máxima</option>
                     </select>
                 </div>
-                <p id="emergencyText" style="font-size: 14px; margin-top: 8px; color: var(--text-secondary);"></p>
+                <p id="emergencyText" style="font-size: 13.5px; margin-top: 8px; color: var(--text-secondary);"></p>
             </div>
         </div>
     </div>
 
+    <!-- Módulo de Assistente IA -->
     <div class="card">
-        <h2>Assistente IA de Estratégia Financeira</h2>
-        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">
-            Obtém recomendações automáticas para renegociar contratos, baixar custos fixos e acelerar os teus objetivos.
+        <h2>🤖 Assistente IA de Estratégia Financeira</h2>
+        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 14px;">
+            Obtém análises automáticas para renegociar contratos, baixar custos fixos e acelerar a tua liberdade financeira.
         </p>
-        <button class="btn" onclick="runAiDiagnosis()">Gerar Diagnóstico Automático</button>
+        <button class="btn" onclick="runAiDiagnosis()">✨ Gerar Diagnóstico Automático</button>
         
         <div id="aiOutput" class="ai-box" style="display:none;">
             <h3>🤖 Diagnóstico do Consultor IA</h3>
@@ -179,7 +199,7 @@
         </div>
 
         <div class="chat-input-area">
-            <input type="text" id="chatQuery" placeholder="Faz uma pergunta ao assistente (ex: como posso poupar mais?)..." onkeypress="if(event.key === 'Enter') sendAiChat()" />
+            <input type="text" id="chatQuery" placeholder="Faz uma pergunta (ex: como posso reduzir despesas fixas?)..." onkeypress="if(event.key === 'Enter') sendAiChat()" />
             <button class="btn" onclick="sendAiChat()">Enviar</button>
         </div>
     </div>
@@ -205,23 +225,20 @@
         chart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Balde 1: Fixas', 'Balde 2: Preparação', 'Balde 3: Emergência', 'Balde 4: Futuro', 'Balde 5: Livre'],
+                labels: ['B1: Fixas', 'B2: Preparação', 'B3: Emergência', 'B4: Futuro', 'B5: Livre'],
                 datasets: [{
                     data: [1400, 100, 250, 150, 300],
-                    backgroundColor: ['#ea4335', '#fbbc04', '#1a73e8', '#34a853', '#9333ea'],
-                    borderWidth: 1
+                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 } } } }
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11, family: 'Inter' } } } }
             }
         });
-        calculateBudget();
-    }
-
-    function updateSlider(source) {
         calculateBudget();
     }
 
@@ -269,8 +286,9 @@
         document.getElementById('emergencyText').innerHTML = 
             `Para cobrir as tuas despesas fixas (${b1} €), a meta de ${months} meses é de <strong>${target.toLocaleString()} €</strong>. ` +
             `Ao ritmo de poupança atual no Balde 3 (${b3} €/mês), demorarás cerca de <strong>${monthsNeeded} meses (${yearsNeeded} anos)</strong> a atingir o objetivo. ` +
-            `Quanto mais rápido completares este fundo, maior será a sensação de fôlego e estabilidade financeira!`;
+            `🚀 Quanto mais rápido completares este fundo, maior será a sensação de fôlego e estabilidade financeira!`;
     }
+
     async function runAiDiagnosis() {
         const outputDiv = document.getElementById('aiOutput');
         const textP = document.getElementById('aiText');
@@ -281,7 +299,7 @@
             return;
         }
 
-        textP.innerHTML = 'A gerar diagnóstico personalizado com base nos teus baldes...';
+        textP.innerHTML = '✨ A gerar diagnóstico personalizado com base nos teus baldes...';
 
         const b1 = document.getElementById('b1Slider').value;
         const income = document.getElementById('incomeInput').value;
@@ -326,14 +344,14 @@
             return;
         }
 
-        textP.innerHTML = 'A pensar...';
+        textP.innerHTML = '💬 A pensar...';
 
         const b1 = document.getElementById('b1Slider').value;
         const income = document.getElementById('incomeInput').value;
         const fullPrompt = `Contexto do utilizador no simulador de Rui Magalhães: Rendimento ${income}€, Balde 1 ${b1}€. Pergunta do utilizador: ${query}`;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+            const response = withFetchModel = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
@@ -346,7 +364,7 @@
                 return;
             }
 
-            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            const reply = data.candidates?.[0]?.content?.parts?.[0]->text || data.candidates?.[0]?.content?.parts?.[0]?.text;
             if (reply) {
                 textP.innerHTML = `<strong>Pergunta:</strong> ${query}<br><br>${reply.replace(/\n/g, '<br>')}`;
                 document.getElementById('chatQuery').value = '';
@@ -357,8 +375,10 @@
             textP.innerHTML = '⚠️ Erro na ligação ao chat. Confirma a tua chave API e a ligação à rede.';
         }
     }
+
     window.onload = initChart;
 </script>
 
 </body>
 </html>
+ 
