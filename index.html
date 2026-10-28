@@ -14,23 +14,52 @@
             --text: #1e293b;
             --text-secondary: #64748b;
             --border: #e2e8f0;
+            --input-bg: #f8fafc;
+            --stat-bg: #f8fafc;
+            --bar-bg: #fef3c7;
+            --bar-border: #fde68a;
+            --ai-bg: #eff6ff;
             --b1: #ef4444; 
             --b2: #f59e0b; 
             --b3: #3b82f6; 
             --b4: #10b981; 
             --b5: #8b5cf6; 
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        [data-theme="dark"] {
+            --primary: #38bdf8;
+            --bg: #0f172a; /* Fundo em azul escuro profundo */
+            --card-bg: #1e293b; /* Cartões em azul escuro elegante */
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --input-bg: #0f172a;
+            --stat-bg: #0f172a;
+            --bar-bg: #1e293b;
+            --bar-border: #334155;
+            --ai-bg: #172554;
+            --b1: #f87171;
+            --b2: #fbbf24;
+            --b3: #60a5fa;
+            --b4: #34d399;
+            --b5: #a78bfa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
         body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.5; }
         .container { max-width: 900px; margin: 0 auto; }
         
         header { text-align: center; margin-bottom: 24px; }
         header h1 { font-size: 26px; color: var(--primary); font-weight: 700; margin-bottom: 4px; }
         header p { color: var(--text-secondary); font-size: 14px; }
-        .author-tag { display: inline-block; background: #dbeafe; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-top: 10px; }
+        .author-tag { display: inline-block; background: var(--ai-bg); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-top: 10px; border: 1px solid var(--border); }
         
-        .api-key-bar { background: #fef3c7; border: 1px solid #fde68a; padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .api-key-bar input { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #f59e0b; border-radius: 6px; font-size: 13px; background: #fff; }
+        .top-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .api-key-bar { background: var(--bar-bg); border: 1px solid var(--bar-border); padding: 12px 16px; border-radius: 12px; font-size: 13px; display: flex; gap: 10px; align-items: center; flex: 1; min-width: 280px; }
+        .api-key-bar input { flex: 1; min-width: 150px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: var(--input-bg); color: var(--text); }
+
+        .theme-toggle-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 10px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .theme-toggle-btn:hover { border-color: var(--primary); }
 
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .card h2 { font-size: 17px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--text); font-weight: 600; }
@@ -40,10 +69,10 @@
 
         .input-group { margin-bottom: 16px; }
         .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); }
-        .input-group input, .input-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; background: #f8fafc; font-weight: 500; }
-        .input-group input:focus, .input-group select:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+        .input-group input, .input-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; background: var(--input-bg); color: var(--text); font-weight: 500; }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
 
-        .slider-group { margin-bottom: 16px; padding: 12px; border-radius: 10px; background: #f8fafc; border: 1px solid var(--border); }
+        .slider-group { margin-bottom: 16px; padding: 12px; border-radius: 10px; background: var(--stat-bg); border: 1px solid var(--border); }
         .slider-header { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; font-weight: 600; }
         
         .s-b1 { color: var(--b1); }
@@ -52,25 +81,25 @@
         .s-b4 { color: var(--b4); }
         .s-b5 { color: var(--b5); }
 
-        input[type="range"] { width: 100%; cursor: pointer; height: 6px; border-radius: 3px; background: #cbd5e1; appearance: none; }
+        input[type="range"] { width: 100%; cursor: pointer; height: 6px; border-radius: 3px; background: var(--border); appearance: none; }
         
         .summary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-box { background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 10px; text-align: center; }
+        .stat-box { background: var(--stat-bg); border: 1px solid var(--border); padding: 12px; border-radius: 10px; text-align: center; }
         .stat-box span { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
         .stat-box strong { font-size: 16px; color: var(--text); }
         .stat-box.highlight strong { color: var(--primary); }
 
         .chart-container { position: relative; height: 240px; width: 100%; }
 
-        .ai-box { background: #eff6ff; border-left: 4px solid var(--primary); padding: 16px; border-radius: 0 12px 12px 0; margin-top: 15px; }
+        .ai-box { background: var(--ai-bg); border-left: 4px solid var(--primary); padding: 16px; border-radius: 0 12px 12px 0; margin-top: 15px; }
         .ai-box h3 { font-size: 15px; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .ai-box p { font-size: 14px; color: var(--text); margin-bottom: 8px; }
         
         .chat-input-area { display: flex; gap: 8px; margin-top: 14px; }
-        .chat-input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: #fff; }
+        .chat-input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--input-bg); color: var(--text); }
         
         .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; font-size: 14px; }
-        .btn:hover { background: #1d4ed8; }
+        .btn:hover { opacity: 0.9; }
         
         footer { text-align: center; margin-top: 30px; font-size: 13px; color: var(--text-secondary); }
     </style>
@@ -84,10 +113,15 @@
         <div class="author-tag">💡 Desenvolvido por Rui Magalhães</div>
     </header>
 
-    <div class="api-key-bar">
-        <span>🔑 <strong>Chave API Gemini:</strong></span>
-        <input type="password" id="apiKeyInput" placeholder="Insere a tua chave API para ativar o assistente..." />
-        <button class="btn" onclick="saveApiKey()" style="padding: 6px 14px; font-size: 12px;">Guardar</button>
+    <div class="top-bar">
+        <div class="api-key-bar">
+            <span>🔑 <strong>API Gemini:</strong></span>
+            <input type="password" id="apiKeyInput" placeholder="Chave API..." />
+            <button class="btn" onclick="saveApiKey()" style="padding: 6px 12px; font-size: 12px;">Guardar</button>
+        </div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Modo Escuro</span>
+        </button>
     </div>
 
     <div class="grid">
@@ -210,6 +244,29 @@
     let apiKey = localStorage.getItem('gemini_api_key') || '';
     if (apiKey) { document.getElementById('apiKeyInput').value = apiKey; }
 
+    // Gestão de Tema (Dark / Light Mode)
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeIcon').innerText = '☀️';
+        document.getElementById('themeText').innerText = 'Modo Claro';
+    }
+
+    function toggleTheme() {
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            document.getElementById('themeIcon').innerText = '🌙';
+            document.getElementById('themeText').innerText = 'Modo Escuro';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            document.getElementById('themeIcon').innerText = '☀️';
+            document.getElementById('themeText').innerText = 'Modo Claro';
+        }
+        updateChartColors();
+    }
+
     function saveApiKey() {
         apiKey = document.getElementById('apiKeyInput').value.trim();
         localStorage.setItem('gemini_api_key', apiKey);
@@ -218,6 +275,8 @@
 
     function initChart() {
         const ctx = document.getElementById('budgetChart').getContext('2d');
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        
         chart = new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -226,16 +285,34 @@
                     data: [1400, 100, 250, 150, 300],
                     backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6'],
                     borderWidth: 2,
-                    borderColor: '#ffffff'
+                    borderColor: isDark ? '#1e293b' : '#ffffff'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11, family: 'Inter' } } } }
+                plugins: { 
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { 
+                            boxWidth: 12, 
+                            font: { size: 11, family: 'Inter' },
+                            color: isDark ? '#f8fafc' : '#1e293b'
+                        } 
+                    } 
+                }
             }
         });
         calculateBudget();
+    }
+
+    function updateChartColors() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (chart) {
+            chart.options.plugins.legend.labels.color = isDark ? '#f8fafc' : '#1e293b';
+            chart.data.datasets[0].borderColor = isDark ? '#1e293b' : '#ffffff';
+            chart.update();
+        }
     }
 
     function calculateBudget() {
