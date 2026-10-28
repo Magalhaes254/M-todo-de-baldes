@@ -14,11 +14,11 @@
             --text: #1e293b;
             --text-secondary: #64748b;
             --border: #e2e8f0;
-            --b1: #ef4444; /* Vermelho - Fixas */
-            --b2: #f59e0b; /* Amarelo/Laranja - Preparação */
-            --b3: #3b82f6; /* Azul - Emergência */
-            --b4: #10b981; /* Verde - Futuro/Investimentos */
-            --b5: #8b5cf6; /* Roxo - Livre */
+            --b1: #ef4444; 
+            --b2: #f59e0b; 
+            --b3: #3b82f6; 
+            --b4: #10b981; 
+            --b5: #8b5cf6; 
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.5; }
@@ -46,7 +46,6 @@
         .slider-group { margin-bottom: 16px; padding: 12px; border-radius: 10px; background: #f8fafc; border: 1px solid var(--border); }
         .slider-header { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; font-weight: 600; }
         
-        /* Cores personalizadas nos títulos dos sliders */
         .s-b1 { color: var(--b1); }
         .s-b2 { color: var(--b2); }
         .s-b3 { color: var(--b3); }
@@ -92,7 +91,6 @@
     </div>
 
     <div class="grid">
-        <!-- Coluna Esquerda: Rendimento e Baldes -->
         <div>
             <div class="card">
                 <h2>💰 1. Rendimento & Bases</h2>
@@ -147,7 +145,6 @@
             </div>
         </div>
 
-        <!-- Coluna Direita: Gráfico e Fundo de Emergência -->
         <div>
             <div class="card">
                 <h2>📈 Resumo do Orçamento</h2>
@@ -185,7 +182,6 @@
         </div>
     </div>
 
-    <!-- Módulo de Assistente IA -->
     <div class="card">
         <h2>🤖 Assistente IA de Estratégia Financeira</h2>
         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 14px;">
@@ -307,7 +303,7 @@
         const prompt = `Analisa este orçamento em Portugal (método dos baldes desenvolvido por Rui Magalhães): Rendimento ${income}€, Despesas Fixas (Balde 1) ${b1}€. Dá conselhos práticos e diretos em Português de Portugal sobre taxa de esforço, renegociação de contratos de energia/telecomunicações, créditos e estratégias para baixar despesas fixas.`;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -351,7 +347,7 @@
         const fullPrompt = `Contexto do utilizador no simulador de Rui Magalhães: Rendimento ${income}€, Balde 1 ${b1}€. Pergunta do utilizador: ${query}`;
 
         try {
-            const response = withFetchModel = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
@@ -364,7 +360,7 @@
                 return;
             }
 
-            const reply = data.candidates?.[0]?.content?.parts?.[0]->text || data.candidates?.[0]?.content?.parts?.[0]?.text;
+            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
             if (reply) {
                 textP.innerHTML = `<strong>Pergunta:</strong> ${query}<br><br>${reply.replace(/\n/g, '<br>')}`;
                 document.getElementById('chatQuery').value = '';
